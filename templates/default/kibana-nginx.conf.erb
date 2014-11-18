@@ -2,14 +2,22 @@ server {
   listen                <%= @listen_address %>:<%= @listen_port %>;
 
   server_name           <%= @server_name %> <%= @server_aliases.join(" ") %>;
-  access_log            <%= node['nginx']['log_dir'] %>/<%= @server_name %>.access.log;
+  
+  log_format spaaza_access '$http_host '
+                    '$remote_addr [$time_local] '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent" '
+                    '$request_time '
+                    '$upstream_response_time';
+  
+  access_log            <%= node['nginx']['log_dir'] %>/<%= @server_name %>.access.log spaaza_access;
 
   location / {
     root  <%= @kibana_dir %>;
     index  index.html  index.htm;
   }
 
-location ~ ^/_aliases$ {
+  location ~ ^/_aliases$ {
     proxy_pass <%= @es_scheme %><%= @es_server %>:<%= @es_port %>;
     proxy_read_timeout 90;
   }
