@@ -4,7 +4,7 @@ maintainer_email 'adrien.brault@gmail.com'
 license          'MIT'
 description      'Kibana OpsWorks'
 long_description 'Kibana OpsWorks'
-version          '0.1.0'
+version          '0.1.1'
 
 depends 'opsworks_utils'
 depends 'ohai'
