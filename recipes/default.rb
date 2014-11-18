@@ -2,6 +2,28 @@ include_recipe 'ohai' # work around missing node['ohai']['plugin_path']
 include_recipe 'nginx' # required otherwise missing nginx user
 include_recipe 'kibana::install'
 
+#Generate htpasswd
+require 'webrick'
+passwd = WEBrick::HTTPAuth::Htpasswd.new('/dev/null')
+
+username = node[:kibana][:username]
+password = node[:kibana][:password]
+passwd.set_passwd(nil, username, password)
+
+hash = passwd.get_passwd(nil, username, false)
+
+template "/etc/nginx/.htpasswd" do
+  source "htpasswd.erb"
+  owner "root"
+  group "root"
+  mode 0644
+  variables ({
+	:username => username,
+	:password => hash
+  })
+  notifies :restart, "service[nginx]", :delayed
+end
+
 template "#{node['nginx']['dir']}/sites-available/kibana" do
   source node['kibana']['nginx']['template']
   cookbook node['kibana']['nginx']['template_cookbook']
