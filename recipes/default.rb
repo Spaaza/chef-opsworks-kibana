@@ -18,8 +18,8 @@ template "/etc/nginx/.htpasswd" do
   group "root"
   mode 0644
   variables ({
-	:username => username,
-	:password => hash
+  :username => username,
+  :password => hash
   })
   notifies :restart, "service[nginx]", :delayed
 end
@@ -38,4 +38,11 @@ template "#{node['nginx']['dir']}/sites-available/kibana" do
     listen_port: node['kibana']['webserver_port'],
     es_scheme: node['kibana']['es_scheme']
   )
+end
+
+cookbook_file "#{node['kibana']['install_dir']}/current/app/dashboards/logstash-ext.json" do
+  source 'dashboards/logstash-ext.json'
+  owner node['nginx']['user']
+  group node['nginx']['group']
+  mode 0644
 end
