@@ -3,14 +3,14 @@ server {
 
   server_name           <%= @server_name %> <%= @server_aliases.join(" ") %>;
   
-  log_format spaaza_access '$http_host '
+  log_format combined_ext '$http_host '
                     '$remote_addr [$time_local] '
                     '"$request" $status $body_bytes_sent '
                     '"$http_referer" "$http_user_agent" '
                     '$request_time '
                     '$upstream_response_time';
   
-  access_log            <%= node['nginx']['log_dir'] %>/<%= @server_name %>.access.log spaaza_access;
+  access_log            <%= node['nginx']['log_dir'] %>/<%= @server_name %>.access.log combined_ext;
 
   location / {
     root  <%= @kibana_dir %>;
